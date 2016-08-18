@@ -1,28 +1,23 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM, {render} from 'react-dom';
 import {compose, createStore} from 'redux';
 import {Provider} from 'react-redux';
 import reducer from './reducer';
+import WithStyles from './containers/with_styles.jsx'
 
-import {ChopinAppContainer} from './components/chopin_app';
+import {ChopinAppContainer} from './containers/chopin_app.jsx';
 
-const createStoreDevTools = compose(
-  window.devToolsExtension ? window.devToolsExtension() : f => f  
-)(createStore);
+const initialState = window.__INITIAL_STATE__
 
-const store = createStoreDevTools(reducer)
+const store = createStore(reducer, initialState, 
+  window.devToolsExtension && window.devToolsExtension()
+);
 
-store.dispatch({
-  type: 'SET_STATE',
-  state: { 
-    selectedKey: 'C',
-    availableKeys: [ 'A', 'B', 'C', 'D', 'E', 'F', 'G' ]
-  }
-})
-
-ReactDOM.render(
+render(
   <Provider store={store}>
-    <ChopinAppContainer />
+    <WithStyles onInsertCss={styles => styles._insertCss()}>
+      <ChopinAppContainer />
+    </WithStyles>
   </Provider>,
-  document.getElementById('app')
+  document.getElementById('root')
 );

@@ -1,35 +1,105 @@
 var webpack = require('webpack');
+var path = require('path');
+var fs = require('fs');
 
-module.exports = {
+const _ = require('lodash')
+
+const DEBUG = !_.includes(process.argv, '--release')
+const VERBOSE = _.includes(process.argv, '--verbose')
+const GLOBALS = {
+  'process.env.NODE_ENV': DEBUG ? '"development"' : '"production"',
+  __DEV__: DEBUG,
+};
+
+var nodeModules = {};
+fs.readdirSync('node_modules')
+  .filter(function(x) {
+    return ['.bin'].indexOf(x) === -1;
+  })
+  .forEach(function(mod) {
+    nodeModules[mod] = 'commonjs ' + mod;
+  });
+
+
+const config = {
+
+  resolve: {
+    root: [
+      path.resolve('./src'),
+    ]
+  },
+
+  module: {
+    loaders: [
+      {
+        test: /\.css$/,
+        loaders: [
+          'isomorphic-style-loader',
+          `css-loader?${JSON.stringify({
+            sourceMap: DEBUG,
+            modules: true,
+            localIdentName: DEBUG ? '[name]_[local]_[hash:base64:3]' : '[hash:base64:4]',
+            minimize: !DEBUG,
+          })}`
+        ]
+      },
+      { test: /\.jsx?$/, exclude: /node_modules/, loader: 'react-hot!babel' },
+      { test: /\.gif$/, loader: "url-loader?mimetype=image/png" },
+      { test: /\.woff(2)?(\?v=[0-9].[0-9].[0-9])?$/, loader: "url-loader?mimetype=application/font-woff" },
+      { test: /\.(ttf|eot|svg)(\?v=[0-9].[0-9].[0-9])?$/, loader: "file-loader?name=[name].[ext]" },
+      { test: /\.json$/, loader: "json"}
+    ]
+  },
+  plugins: [
+    new webpack.BannerPlugin('require("source-map-support").install();',
+                           { raw: true, entryOnly: false })
+  ],
+  devtool: 'source-map'
+};
+
+const clientConfig = _.extend(_.clone(config), {
   entry: [
     'webpack-dev-server/client?http://localhost:8080', // Setting the URL for the hot reload
     'webpack/hot/only-dev-server', // Reload only the dev server
     './src/index.jsx'
   ],
-  module: {
-    loaders: [{
-      test: /\.jsx?$/,
-      exclude: /node_modules/,
-      loader: 'react-hot!babel' // Include the react-hot loader
-    }, {
-      test: /\.css$/,
-      loader: 'style!css' // We add the css loader
-    }]
-  },
-  resolve: {
-    extensions: ['', '.js', '.jsx']
-  },
-  output: {
-    path: __dirname + '/dist',
-    publicPath: '/',
-    filename: 'bundle.js'
-  },
-  devServer: {
-    contentBase: './dist',
-    hot: true
-  },
+  target: 'web',
   plugins: [
     new webpack.HotModuleReplacementPlugin() // Wire in the hot loading plugin
-  ]
-};
+  ],
+  output: {
+    path: __dirname + '/dist',
+    publicPath: '/assets/',
+    filename: 'bundle.js',
+    sourceMapFileName: 'bundle.map'
+  },
+})
+
+const serverConfig = _.extend(_.clone(config), {
+  entry: [
+    './src/server.jsx'
+  ],
+  target: 'node',
+
+  node: {
+    console: false,
+    global: false,
+    process: false,
+    Buffer: false,
+    __filename: false,
+    __dirname: false,
+  },
+  externals: nodeModules,
+  output: {
+    path: __dirname + '/dist',
+    publicPath: '/assets/',
+    filename: 'server.js',
+    libraryTarget: 'commonjs2',
+    sourceMapFileName: 'server.map'
+  },
+})
+
+const configList = [];
+
+module.exports = [clientConfig, serverConfig]
 

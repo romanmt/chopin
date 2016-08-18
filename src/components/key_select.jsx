@@ -1,20 +1,10 @@
-import React, {Component} from 'react'
-import Dropdown from 'react-dropdown'
+import React, {createClass} from 'react'
 
-require('./key_select.css')
+export default createClass({
 
-export default class KeySelect extends Component {
-  _onSelect(option) {
-    this.props.changeKey(option.value)
+  render: function() {
+    return <p>
+      The Key of: {this.props.selectedKey} 
+    </p>
   }
-
-  render() {
-    return <h2>
-      The Key of: 
-      <Dropdown options={this.props.availableKeys.toJS()} 
-                onChange={this._onSelect.bind(this)} 
-                value={this.props.selectedKey} 
-                placeholder="Select a Key" />
-    </h2>
-  }
-}
+})
