@@ -25,35 +25,25 @@ const config = {
 
   resolve: {
     root: [
-      path.resolve('./src'),
+      path.resolve('./src')
     ]
   },
-
   module: {
+
     loaders: [
-      {
-        test: /\.css$/,
-        loaders: [
-          'isomorphic-style-loader',
-          `css-loader?${JSON.stringify({
-            sourceMap: DEBUG,
-            modules: true,
-            localIdentName: DEBUG ? '[name]_[local]_[hash:base64:3]' : '[hash:base64:4]',
-            minimize: !DEBUG,
-          })}`
-        ]
+      { test: /\.scss$/,
+        loaders: ['css', 'sass']
       },
       { test: /\.jsx?$/, exclude: /node_modules/, loader: 'react-hot!babel' },
       { test: /\.gif$/, loader: "url-loader?mimetype=image/png" },
       { test: /\.woff(2)?(\?v=[0-9].[0-9].[0-9])?$/, loader: "url-loader?mimetype=application/font-woff" },
       { test: /\.(ttf|eot|svg)(\?v=[0-9].[0-9].[0-9])?$/, loader: "file-loader?name=[name].[ext]" },
-      { test: /\.json$/, loader: "json"}
+      { test: /\.json$/, loader: "json" }
     ]
   },
-  plugins: [
-    new webpack.BannerPlugin('require("source-map-support").install();',
-                           { raw: true, entryOnly: false })
-  ],
+  sassLoader: {
+    includePaths: [path.resolve(__dirname, "./node_modules")]
+  },
   devtool: 'source-map'
 };
 
@@ -80,7 +70,10 @@ const serverConfig = _.extend(_.clone(config), {
     './src/server.jsx'
   ],
   target: 'node',
-
+  plugins: [
+    new webpack.BannerPlugin('require("source-map-support").install();',
+                           { raw: true, entryOnly: false })
+  ],
   node: {
     console: false,
     global: false,

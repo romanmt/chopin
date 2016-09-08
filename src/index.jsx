@@ -3,11 +3,12 @@ import ReactDOM, {render} from 'react-dom';
 import {compose, createStore} from 'redux';
 import {Provider} from 'react-redux';
 import reducer from './reducer';
+import {fromJS} from 'immutable';
 import WithStyles from './containers/with_styles.jsx'
 
 import {ChopinAppContainer} from './containers/chopin_app.jsx';
 
-const initialState = window.__INITIAL_STATE__
+const initialState = fromJS(window.__INITIAL_STATE__)
 
 const store = createStore(reducer, initialState, 
   window.devToolsExtension && window.devToolsExtension()
@@ -21,3 +22,4 @@ render(
   </Provider>,
   document.getElementById('root')
 );
+

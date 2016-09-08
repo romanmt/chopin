@@ -6,9 +6,9 @@ import { Provider } from 'react-redux'
 import chopinApp from './reducer.js'
 import {ChopinAppContainer} from 'containers/chopin_app.jsx'
 import {renderToString} from 'react-dom/server'
-import {Map} from 'immutable'
 import WithStyles from 'containers/with_styles.jsx'
 import {isEmpty} from 'lodash'
+import {fromJS} from 'immutable'
 
 const app = Express()
 const port = 3000
@@ -16,22 +16,20 @@ const port = 3000
 app.use(Express.static('assets'));
 app.get('*', handleRender)
 
-
-
 function handleRender(req, res) {
-  
+
   const css = [] // CSS for all rendered React components
 
-  let initialState = {
-    selectedKey: 'C'
-  }
+  let initialState = fromJS({
+    selectedKey: 'C',
+    availableKeys: ['C', 'G']
+  })
 
   const store = createStore(chopinApp, initialState)
 
   const html = renderToString(
     <Provider store={store}>
       <WithStyles onInsertCss={(styles) => {
-          console.dir(styles)
           css.push(styles._getCss())
         }
       }>
@@ -42,7 +40,6 @@ function handleRender(req, res) {
 
   const finalState = store.getState()
   let fullPage = renderFullPage(html, css, finalState)
-  console.log(fullPage)
   res.send(fullPage)
 }
 
