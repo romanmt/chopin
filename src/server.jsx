@@ -9,10 +9,12 @@ import {renderToString} from 'react-dom/server'
 import WithStyles from 'containers/with_styles.jsx'
 import {isEmpty} from 'lodash'
 import {fromJS} from 'immutable'
+import api from './api.js'
 
 const app = Express()
 const port = 3000
 
+app.use('/api', api)
 app.use(Express.static('assets'));
 app.get('*', handleRender)
 
@@ -22,7 +24,11 @@ function handleRender(req, res) {
 
   let initialState = fromJS({
     selectedKey: 'C',
-    availableKeys: ['C', 'G']
+    availableKeys: ['C', 'G'],
+    notes: [],
+    api: {
+      isFetching: false
+    }
   })
 
   const store = createStore(chopinApp, initialState)

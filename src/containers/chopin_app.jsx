@@ -44,7 +44,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     onChangeKey: (key) => {
-      dispatch(ActionCreators.changeKey(key))
+      dispatch(ActionCreators.selectKey(key))
     }
   }
 }
