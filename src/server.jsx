@@ -23,9 +23,9 @@ function handleRender(req, res) {
   const css = [] // CSS for all rendered React components
 
   let initialState = fromJS({
-    selectedKey: 'C',
-    availableKeys: ['C', 'G'],
-    notes: [],
+    selectedKey: '',
+    availableKeys: ['A', 'B', 'C', 'D', 'E', 'F', 'G'],
+    chords: [],
     api: {
       isFetching: false
     }

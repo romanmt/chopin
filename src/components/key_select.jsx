@@ -1,6 +1,4 @@
 import React, {PropTypes} from 'react'
-import {each} from 'lodash'
-import FlatButton from 'material-ui/FlatButton';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 
@@ -11,15 +9,12 @@ const KeySelect = ({selectedKey, availableKeys, onChangeKey}) => {
   }
 
   return (
-    <div>
-      <p> The Key of: {selectedKey} </p>
-      <SelectField id='key-select' value={selectedKey} onChange={handleChange}>
-        { availableKeys.map(k => {
-            return <MenuItem key={k} primaryText={k} value={k}/>
-          })
-        }
-      </SelectField>
-    </div>
+    <SelectField id='key-select' value={selectedKey} onChange={handleChange}>
+      { availableKeys.map(k => {
+          return <MenuItem key={k} primaryText={k} value={k}/>
+        })
+      }
+    </SelectField>
   );
 }
 

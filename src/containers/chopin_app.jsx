@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import KeySelect from '../components/key_select.jsx'
+import ChordList from '../components/chord_list.jsx'
 import * as ActionCreators from '../action_creators'
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
@@ -21,13 +22,14 @@ const muiTheme = getMuiTheme({
 
 export default class ChopinApp extends Component {
   render() {
-    return <section style={styles.root}>
+    return <section>
       <MuiThemeProvider muiTheme={muiTheme}>
         <div>
           <KeySelect selectedKey={this.props.selectedKey}
                      availableKeys={this.props.availableKeys}
+                     isFetching={this.props.isFetching}
                      onChangeKey={this.props.onChangeKey} />
-          <p style={styles.title}>hello there, am I blue?</p>
+          <ChordList chords={this.props.chords} />
         </div>
       </MuiThemeProvider>
     </section>
@@ -37,7 +39,9 @@ export default class ChopinApp extends Component {
 const mapStateToProps = (state) => {
   return {
     selectedKey: state.get('selectedKey'),
-    availableKeys: state.get('availableKeys')
+    availableKeys: state.get('availableKeys'),
+    chords: state.get('chords'),
+    isFetching: state.getIn(['api', 'isFetching'])
   }
 }
 
@@ -47,12 +51,6 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(ActionCreators.selectKey(key))
     }
   }
-}
-
-const styles = {
-  "font-family": "'Roboto', sans-serif",
-  root: {padding: '10px'},
-  title: {color: 'red'}
 }
 
 export const ChopinAppContainer = connect(mapStateToProps, mapDispatchToProps)
