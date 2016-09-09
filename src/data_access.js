@@ -5,7 +5,7 @@ const db = new neo4j.GraphDatabase('http://192.168.33.10:7474');
 
 export function getChords(key, cb) {
   db.cypher({
-    query: 'MATCH (c:Chord)-[r:BELONGS_TO]->(k:Key) WHERE k.name = {key} RETURN c',
+    query: 'MATCH (c:Chord)-[r:BELONGS_TO]->(k:Key) WHERE k.name = {key} RETURN c ORDER BY r.position',
     params: {
       key: key
     }
